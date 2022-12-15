@@ -72,8 +72,8 @@ export default function Cadastro () {
             </Inputs>
             <button type="submit">Entrar</button>
         </form>
-        <Link to="/cadastro">
-            <p>Não tem uma conta? Cadastre-se!</p>
+        <Link to="/">
+            <p>Já tem uma conta? Faça login!</p>
         </Link>
         </Container>
     )

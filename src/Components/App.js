@@ -1,5 +1,5 @@
 import React from "react";
-// import { useState } from "react";
+import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import styled from "styled-components";
 
@@ -9,12 +9,34 @@ import Cadastro from "./Pages/Cadastro";
 import Habitos from "./Pages/Habitos";
 import Hoje from "./Pages/Hoje";
 import Historico from "./Pages/Historico";
-// import Header from "./Header";
-// import Footer from "./Footer"; 
+import UserContext from "../contexts/UserContext";
+
+import Footer from "./Footer"
+
 
 export default function App() {
-  
+
+    
+
+    const [user, setUser] = useState(''); 
+    const [loading, setLoading] = useState(false);
+    const [habitos, setHabitos] = useState('');
+    const [hoje, setHoje] = useState('');
+    const [porcentagem, setPorcentagem] = useState(0);
+    const [reload, setReload] = useState(true);
+    const config = {headers: {Authorization: `Bearer ${user.token}`}};
+    
     return(
+
+        <UserContext.Provider value={{  user, setUser,
+            habitos, setHabitos,
+            hoje, setHoje,
+            porcentagem, setPorcentagem,
+            reload, setReload,
+            loading, setLoading,
+            // config
+          }}>
+
         <Container>
             <BrowserRouter>
             <GlobalStyle/>
@@ -26,10 +48,12 @@ export default function App() {
                 <Route path="/hoje" element={<Hoje/>} />
                 <Route path="/historico" element={<Historico/>} />
                 </Routes>
+                <Footer></Footer>
 
             </BrowserRouter>
 
         </Container>
+        </UserContext.Provider>
     )
  
   
