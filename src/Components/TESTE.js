@@ -1,15 +1,13 @@
+
 import { useState, useEffect, useContext } from "react";
-// import { getHabits, postNewHabit, deleteHabit } from "../../services/trackit";
+import { getHabits, postNewHabit, deleteHabit } from "../../services/trackit";
 import UserContext from "../../contexts/UserContext";
 // import { BsTrash } from 'react-icons/bs';
-import axios from "axios";
-import styled from "styled-components";
 
+import TopBar from "../TopBar";
+import BottomMenu from "../BottomMenu";
 
-import Header from "../Header";
-import Footer from "../Footer";
-
-// import { Container, Header, NewHabitForm, DayButton, DaysPanel, ControlPanel, ControlButton, HabitCard } from "./style";
+import { Container, Header, NewHabitForm, DayButton, DaysPanel, ControlPanel, ControlButton, HabitCard } from "./style";
 
 const daysBase = [  { id: 0, initial: 'D', selected: false },
                 { id: 1, initial: 'S', selected: false },
@@ -22,10 +20,10 @@ const daysBase = [  { id: 0, initial: 'D', selected: false },
 
 let days = daysBase.map(day => {return {...day}});
 
-export default function Habitos(){
+export default function Habits(){
 
-    const { user, habitos, setHabitos, reload, setReload, config } = useContext(UserContext);
-    const [novoHabito, setNovoHabito] = useState({name:'', days:[]});
+    const { user, habits, setHabits, refresh, setRefresh, config } = useContext(UserContext);
+    const [newHabit, setNewHabit] = useState({name:'', days:[]});
     const [showForm, setShowForm] = useState(false);
     const [loading, setLoading] = useState(false);
     
@@ -34,16 +32,16 @@ export default function Habitos(){
 
         if(user === ''){ return; }
 
-        const promise = axios.get(`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits`, config);
+        const promise = getHabits(config);
 
         promise.then(response => {
-            setHabitos(response.data);
+            setHabits(response.data);
         })
 
         promise.catch(error => {
-            alert (`Erro ${error.response.status}!`)
+            alert (`Oh no! Erro ${error.response.status}!`)
         })
-    },[reload]);
+    },[refresh]);
 
     function CreateDayButton({day}){
 
@@ -54,7 +52,7 @@ export default function Habitos(){
             setClick(day.selected);
             let idDays = days.filter(day => day.selected);
             idDays = idDays.map(day => day.id);
-            setNovoHabito({ ...novoHabito, days: idDays });
+            setNewHabit({ ...newHabit, days: idDays });
         }
 
         return(
@@ -95,25 +93,25 @@ export default function Habitos(){
 
     function handleForm(){
 
-        if(novoHabito.name === ''){
+        if(newHabit.name === ''){
             alert('Insira o nome do seu hábito!');
             return
         }
 
-        if(novoHabito.days.length === 0){
+        if(newHabit.days.length === 0){
             alert('Insira os dias do seu hábito!');
             return
         }
 
         setLoading(true);
-        const promise = axios.post(`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits`, novoHabito, config);
+        const promise = postNewHabit(newHabit, config);
 
         promise.then(() => {
-            setNovoHabito({name:'', days:[]});
+            setNewHabit({name:'', days:[]});
             days = daysBase.map(day => {return {...day}});
             setLoading(false);
             setShowForm(false);
-            setReload(!reload);
+            setRefresh(!refresh);
         })
 
         promise.catch(error => {
@@ -125,27 +123,27 @@ export default function Habitos(){
     // function handleDelete(id) {
     //     if (window.confirm('Você realmente deseja excluir esse hábito?')) {
     //         deleteHabit (id, config).then(() => {
-    //             setReload(!reload)
+    //             setRefresh(!refresh)
     //         });
     //     }
     // }
     
     return (
         <>
-            <Header/>
+            <TopBar/>
 
             <Container>
-                <Topo>
+                <Header>
                     <h1>Meus Hábitos</h1>
                     <button onClick={() => setShowForm(!showForm)} disabled={loading}>+</button>
-                </Topo>
+                </Header>
 
                 {showForm ?
                     <NewHabitForm>
                         <input
                             type='text'
-                            value={novoHabito.name}
-                            onChange={e => setNovoHabito({ ...novoHabito, name: e.target.value })}
+                            value={newHabit.name}
+                            onChange={e => setNewHabit({ ...newHabit, name: e.target.value })}
                             placeholder='nome do hábito'
                             required
                             disabled={loading}
@@ -168,20 +166,29 @@ export default function Habitos(){
                     : <></>
                 }
 
-                {habitos.length === 0 ?
+                {habits.length === 0 ?
                     <h6>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</h6>
                     :
                     <>
-                        {habitos.map((habit, index) => <CreateHabitCard key={index} habit={habit} />)}
+                        {habits.map((habit, index) => <CreateHabitCard key={index} habit={habit} />)}
                     </>
                 }
                 
             </Container>
 
-            <Footer />
+            <BottomMenu />
         </>
     )
 }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -190,7 +197,6 @@ width: 100%;
 min-height: 100vh;
 height: 100%;
 padding: 100px 20px;
-background-color: #E5E5E5;
 h6 {
     margin-top: 30px;
     font-weight: 400;
@@ -200,7 +206,7 @@ h6 {
 }
 `
 
-const Topo = styled.div`
+const Header = styled.div`
 display: flex;
 align-items: center;
 justify-content: space-between;

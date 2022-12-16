@@ -11,7 +11,8 @@ import Hoje from "./Pages/Hoje";
 import Historico from "./Pages/Historico";
 import UserContext from "../contexts/UserContext";
 
-import Footer from "./Footer"
+// import Footer from "./Footer"
+// import Header from "./Header"
 
 
 export default function App() {
@@ -48,7 +49,7 @@ export default function App() {
                 <Route path="/hoje" element={<Hoje/>} />
                 <Route path="/historico" element={<Historico/>} />
                 </Routes>
-                <Footer></Footer>
+               
 
             </BrowserRouter>
 
