@@ -3,22 +3,35 @@ import logo from "../../Assets/logo.png";
 import { useState } from "react";
 import axios from "axios";
 import styled from "styled-components";
+import { ThreeDots } from  'react-loader-spinner';
+
 
 
 export default function Login () {
     
     const [login, setLogin] = useState({email:'', password:''});
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+
 
     function entrar(event) {
         event.preventDefault();
+        setLoading(true);
+
         const promise = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login", login);
         promise.then((res) => {
+            setLoading(false);
             navigate("/hoje");
         });
-        promise.catch((err) => console.log(err.response.data))
+        promise.catch((err) => {
+            console.log(err.response.data)
+            setLoading(false);
+
+        
+        })
     
     }
+
 
     return (
         <Container>
@@ -35,6 +48,8 @@ export default function Login () {
                 value={login.email} 
                 onChange={(event) => setLogin({...login, email:event.target.value})} 
                 required
+                disabled={loading}
+
                 />
                 <input 
                 type="password" 
@@ -42,14 +57,27 @@ export default function Login () {
                 value={login.password} 
                 onChange={(event) => setLogin({...login, password:event.target.value})} 
                 required
+                disabled={loading}
+
                 />
             </Inputs>
-            <button type="submit">Entrar</button>
+
+            <button type='submit' disabled={loading}>
+                    {loading === false ? 'Entrar' :  <ThreeDots
+                        height="20"
+                        width="50"
+                        radius="9"
+                        color="white"
+                        ariaLabel="three-dots-loading"
+                        wrapperStyle={{}}
+                        wrapperClassName=""
+                        visible={true} 
+                        />}
+                </button>            
         </form>
-        <Link to="/cadastro">
+        <Link to={loading === false ? '/cadastro' : ''}>
             <p>Não tem uma conta? Cadastre-se!</p>
         </Link>
-
 
         </Container>
     )
@@ -88,6 +116,7 @@ const Container = styled.div`
         border: none;
         border-radius: 5px;
         cursor: pointer;
+
     }
 `
 const Inputs = styled.div`
@@ -102,3 +131,4 @@ const Inputs = styled.div`
     }
   
 `
+

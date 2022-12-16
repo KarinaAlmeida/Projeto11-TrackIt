@@ -3,29 +3,36 @@ import logo from "../../Assets/logo.png";
 import { useState } from "react";
 import axios from "axios";
 import styled from "styled-components";
+import { ThreeDots } from  'react-loader-spinner';
+
 
 
 export default function Cadastro () {
 
      const navigate = useNavigate();   
     const [cadastrar, setCadastrar] = useState({email:'', password:'', name:'', image:''});
+    const [loading, setLoading] = useState(false);
+
     
 
     function registrar(event) {
         event.preventDefault();
+        setLoading(true);
+
     
         const promise = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/sign-up", cadastrar);
         promise.then((res) => {
             console.log(res.data);
+            setLoading(false);
             navigate("/");
         });
 
         promise.catch((err) => console.log(err.response.data))
+        alert('Ops! Tente novamente!')
+        setLoading(false);
+
     
     }
-
-
-   
 
 
     return (
@@ -43,6 +50,8 @@ export default function Cadastro () {
                 value={cadastrar.email} 
                 onChange={(event) => setCadastrar({...cadastrar, email:event.target.value})} 
                 required
+                disabled={loading}
+
                 />
                 <input 
                 type="password" 
@@ -50,6 +59,8 @@ export default function Cadastro () {
                 value={cadastrar.password} 
                 onChange={(event) => setCadastrar({...cadastrar, password:event.target.value})} 
                 required
+                disabled={loading}
+
                 />
                 <input
                     type='text'
@@ -57,6 +68,8 @@ export default function Cadastro () {
                     onChange={(event) => setCadastrar({...cadastrar, name:event.target.value})}
                     placeholder='nome'
                     required
+                    disabled={loading}
+
                     
                 />
                 <input
@@ -65,14 +78,27 @@ export default function Cadastro () {
                     onChange={(event) => setCadastrar({...cadastrar, image:event.target.value})}
                     placeholder='foto'
                     required
+                    disabled={loading}
+
                    
                 />
            
            
             </Inputs>
-            <button type="submit">Entrar</button>
+            <button type='submit' disabled={loading}>
+                    {loading === false ? 'Entrar' :  <ThreeDots
+                        height="20"
+                        width="50"
+                        radius="9"
+                        color="white"
+                        ariaLabel="three-dots-loading"
+                        wrapperStyle={{}}
+                        wrapperClassName=""
+                        visible={true} 
+                        />}
+                </button>  
         </form>
-        <Link to="/">
+        <Link to={loading === false ? '/' : ''}>
             <p>Já tem uma conta? Faça login!</p>
         </Link>
         </Container>
